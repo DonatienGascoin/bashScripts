@@ -12,7 +12,7 @@ localPath=""
 
 echo " **** Step 1: Local path"
 
-echo "Write path since root folder to the Jar (target folder)"
+echo "Write path since root folder to your Jar project"
 read localPath
 
 

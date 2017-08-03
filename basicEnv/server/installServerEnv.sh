@@ -33,7 +33,7 @@ mkdir $projectName
 
 cd $projectName
 mkdir "scripts"
-mkdir "tmp"
+mkdir "tmp "
 mkdir "prod"
 cd "./prod"
 mkdir "archives"

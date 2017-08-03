@@ -7,9 +7,12 @@ function usage(){
 	echo "|Options:                      |"
 	echo "| -h for help                  |"
 	echo "|------------------------------|"
-	echo "| -p path to Jar               |"
 	echo "| -j jar name                  |"
-	echo "| -e environment (prod/qlf)    |"
+    echo "| -e environment (prod/qlf)    |"
+    echo "|                              |"
+    echo "| If you want to send directly |"
+    echo "| on production environment    |"
+    echo "| -f force send to prod (yes)  |"
 	echo "|                              |"
 	echo "|******************************|"
 
@@ -27,42 +30,46 @@ fi
 
 ipServer=""
 userName=""
-localPath=""
 serverPath=""
-jarName=""
-environment="prod"
 
-#Get optiona
-while getopts ":p:j:e:h" OPTION; do
+localPath=""
+environment="prod"
+forceProd="no"
+
+artifactId=""
+packaging=""
+version=""
+
+jarName=""
+
+#Get option
+while getopts "h:f" OPTION; do
     case $OPTION in
         h)
             usage
             exit 1
             ;;
-        p)
-            localPath=sdfg
-            ;;
-        j)
-            jarName=$OPTARG
-            ;;
-        e)
-            environment=$OPTARG
+        f)
+            forceProd=$OPTARG
             ;;
     esac
 done
 
-if [ -z $localPath ] || [ -z $jarName ] || [ -z $environment ]
-then
-        echo "Probleme with options !"
-        echo "(run -h for help)"
-        exit 1
-fi
+jarName="$artifactId-$version.packaging"
 
 cd $localPath
 
-echo "Send Jar file on server"
+    echo "Send Jar file on server"
+
+if [ $environment == "test" ] && [ $forceProd == "no" ]
+    then
+    envi="test"
+else
+    envi="prod"
+fi
+
+
 scp ./$jarName $userName@$ipServer:~/$serverPath
 
 echo "Start API script to load new Jar file"
-ssh $userName@$ipServer -C "~/scripts/deployApi.sh" 
-
+ssh $userName@$ipServer -C "~/scripts/loadJar.sh -e $envi -j $jarName"
