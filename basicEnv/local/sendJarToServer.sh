@@ -7,8 +7,6 @@ function usage(){
 	echo "|Options:                      |"
 	echo "| -h for help                  |"
 	echo "|------------------------------|"
-	echo "| -j jar name                  |"
-    echo "| -e environment (prod/qlf)    |"
     echo "|                              |"
     echo "| If you want to send directly |"
     echo "| on production environment    |"
@@ -18,13 +16,6 @@ function usage(){
 
 }
 
-
-if [ $# -eq 0 ]
-then
-        echo "Missing options!"
-        echo "(run -h for help)"
-        exit 1
-fi
 
 #Data
 
@@ -43,7 +34,7 @@ version=""
 jarName=""
 
 #Get option
-while getopts "h:f" OPTION; do
+while getopts ":f:h" OPTION; do
     case $OPTION in
         h)
             usage
@@ -51,12 +42,13 @@ while getopts "h:f" OPTION; do
             ;;
         f)
             forceProd=$OPTARG
+            echo "Force sending Jar to production"
             ;;
     esac
 done
 
-jarName="$artifactId-$version.packaging"
-
+jarName="$artifactId-$version.$packaging"
+echo $jarName
 cd $localPath
 
     echo "Send Jar file on server"
@@ -68,8 +60,7 @@ else
     envi="prod"
 fi
 
-
-scp ./$jarName $userName@$ipServer:~/$serverPath
+scp ./$jarName $userName@$ipServer:"$serverPath/tmp/$jarName"
 
 echo "Start API script to load new Jar file"
-ssh $userName@$ipServer -C "~/scripts/loadJar.sh -e $envi -j $jarName"
+ssh $userName@$ipServer -C "$serverPath/scripts/loadJar.sh -e $envi -j $jarName"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 if [ $# -eq 0 ]
@@ -13,6 +13,7 @@ fi
 environment="prod"
 jarName=""
 oldJarName=""
+packaging=""
 #path to project root folder
 path=""
 process=""
@@ -30,48 +31,53 @@ while getopts ":j:e:" OPTION; do
 done
 
 DATE=`date +%Y%m%d%H%M%S`
+
+cd "topquizz"
+
 if [ $environment == "prod" ]
 then
-	echo " **** Step 1: Checking running Jar "
+    echo " **** Step 1: Checking running Jar "
 
-    process=$(ps axf | grep "-Dspring.profiles.active=prod" | grep -v grep | awk '{print $1}')
-    oldJarName=$(ps axf | grep "-Dspring.profiles.active=prod" | grep -v grep | awk '{print $7}')
-
-    if [ $process != "" ]
+    process=$(ps axf | grep $packaging | grep "Dspring.profiles.active=prod" | awk '{print $1}')
+    oldJarName=$(ps axf | grep $packaging | grep "Dspring.profiles.active=prod" | awk '{print $8}')
+echo "Prod Process [$process]"
+    if [ ! -z $process ]
         then
         echo "    Stop running production Jar"
-        kill -9 $process
+        kill -9 $process > /dev/null 2>&1
 
         echo "    Move old Jar to archives"
-        mv "$path/prod/$oldJarName" "$path/prod/archives/$oldJarName$DATE" 
+        mv ./prod/$oldJarName ./prod/archives/$oldJarName$DATE 
     fi
 
     echo "    Move new Jar to production"
-    mv "$path/tmp/$jarName" "$path/prod/"
+    mv ./tmp/$jarName ./prod/
 
     echo "    Start new Jar" 
 
-	java -jar -Dspring.profiles.active=production $jarName
+    cd ./prod/
+    java -jar -Dspring.profiles.active=prod $jarName &
 else
     echo " **** Step 1: Checking running Jar "
 
-    process=$(ps axf | grep "-Dspring.profiles.active=test" | grep -v grep | awk '{print $1}')
-    oldJarName=$(ps axf | grep "-Dspring.profiles.active=test" | grep -v grep | awk '{print $7}')
-
-    if [ $process != "" ]
+    process=$(ps axf | grep $packaging | grep "Dspring.profiles.active=test" | awk '{print $1}')
+    oldJarName=$(ps axf | grep $packaging | grep "Dspring.profiles.active=test" | awk '{print $8}')
+echo "Test Process [$process]"
+    if [ ! -z $process ]
         then
         echo "    Stop running test Jar"
-        kill -9 $process
+        kill -9 $process > /dev/null 2>&1
 
         echo "    Move old Jar to archives"
-        mv "$path/test/$oldJarName" "$path/test/archives/$oldJarName$DATE" 
+        mv ./test/$oldJarName ./test/archives/$oldJarName$DATE 
     fi
-
-    echo "    Move new Jar to production"
-    mv "$path/tmp/$jarName" "$path/test/"
+    echo "    Move new Jar to test"
+    mv ./tmp/$jarName ./test/
 
     echo "    Start new Jar" 
-
-    java -jar -Dspring.profiles.active=test $jarName
+    echo "La: "$(pwd)
+    cd "./test/"
+    java -jar -Dspring.profiles.active=test $jarName &
 fi
+
 

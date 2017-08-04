@@ -119,6 +119,9 @@ sed -r -i "s#(localPath=)(.*)#\1\"$localPath\"#" retrieveJarInfo.sh
 
 echo "-> Edit sendJarToServer.sh"
 
+echo "   -> Edit server path"
+sed -r -i "s#(serverPath=)(.*)#\1\"~/$projectName\"#" sendJarToServer.sh
+
 echo "   -> Edit server ip"
 sed -r -i "s#(ipServer=)(.*)#\1\"$ipServer\"#" sendJarToServer.sh
 
@@ -152,6 +155,9 @@ if [ $qlf == "yes" ]
 
 	echo "   -> Edit server ip"
 	sed -r -i "s#(ipServer=)(.*)#\1\"$ipServer\"#" moveTestVersionToProd.sh
+
+	echo "   -> Edit server ip"
+	sed -r -i "s#(projectName=)(.*)#\1\"$projectName\"#" moveTestVersionToProd.sh
 fi
 
 #Edit server files
@@ -166,9 +172,17 @@ sed -r -i "s#(qlf=)(.*)#\1\"$qlf\"#" installServerEnv.sh
 
 echo "-> Edit loadJar.sh"
 echo "   -> Edit project root folder"
-sed -r -i "s#(path=)(.*)#\1\"~/$projectName/\"#" installServerEnv.sh
+sed -r -i "s#(path=)(.*)#\1\"~/$projectName\"#" loadJar.sh
+echo "   -> Edit packaging"
+sed -r -i "s#(packaging=)(.*)#\1\"$packaging\"#" loadJar.sh
 
+if [ $qlf == "yes" ]
+	then
+	echo "-> Edit moveTestVersionToProd.sh"
 
+	echo "   -> Edit packaging"
+	sed -r -i "s#(packaging=)(.*)#\1\"$packaging\"#" moveTestVersionToProd.sh
+fi
 
 
 

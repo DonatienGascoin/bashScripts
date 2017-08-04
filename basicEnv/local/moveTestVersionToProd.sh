@@ -2,5 +2,6 @@
 
 userName=""
 ipServer=""
+projectName=""
 
-ssh $userName@$ipServer -C "~/scripts/loadJar.sh"
+ssh $userName@$ipServer -C "~/$projectName/scripts/moveTestVersionToProd.sh"

@@ -1,30 +1,24 @@
 #!/bin/bash
 
-echo "|***********************|"
-echo "|****  Instalation  ****|"
-echo "|****    server     ****|"
-echo "|**** environement  ****|"
-echo "|***********************|"
-echo -e "\n\n"
-echo "Environment will be provided in following way:"
-echo "   Project name"
-echo "   ---- Scripts"
-echo "   ---- Production"
-echo "   -------- archives"
-echo "   ---- Test"
-echo "   -------- archives"
-echo "   ---- tmp"
-echo ""
-echo "   -> Please do not delete folders, scripts (local and server may be broken)"
-echo "   -> in production and test environment will be put actual jar"
-echo "   -> Production and test can work in same time:"	
-echo "      Test port: 8091"
-echo "      Prod port: 8090"
-echo -e "\n\n"
-
 #Datas
 projectName=""
 qlf="no"
+
+
+echo ""
+echo "Environment will be provided in following way:"
+echo "   $projectName"
+echo "   ---- scripts"
+echo "   ---- production"
+echo "   -------- archives"
+echo "   ---- test"
+echo "   -------- archives"
+echo "   ---- tmp"
+echo ""
+echo "   -> Please do not delete folders, scripts (local and server scripts may be broken)"
+echo "   -> Production and test can work in same time if you configure active profiles"	
+echo -e "\n\n"
+
 
 echo " **** Step 1: Create architecture"
 
@@ -33,7 +27,7 @@ mkdir $projectName
 
 cd $projectName
 mkdir "scripts"
-mkdir "tmp "
+mkdir "tmp"
 mkdir "prod"
 cd "./prod"
 mkdir "archives"
@@ -49,6 +43,10 @@ fi
 
 echo " **** Step 2: Move scripts"
 cd "../"
+
+#change CR LF by LF
+ sed -i -e 's/\r$//' ./*.sh
+
 mv "installServerEnv.sh" "$projectName/scripts/"
 mv "loadJar.sh" "$projectName/scripts/"
 mv "moveTestVersionToProd.sh" "$projectName/scripts/"
